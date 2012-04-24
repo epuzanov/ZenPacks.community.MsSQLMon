@@ -10,9 +10,9 @@ if os.path.isdir(skinsDir):
 from Products.ZenModel.ZenPack import ZenPackBase
 
 class ZenPack(ZenPackBase):
-    """ MsSQLMon_ODBC loader
+    """ MsSQLMon loader
     """
     packZProperties = [
-            ('zMsSqlConnectionString', 'DRIVER={FreeTDS};TDS_Version=8.0;PORT=1433', 'string'),
-            ('zMsSqlSrvInstances', '', 'string'),
+            ('zMsSqlConnectionString', "'pyisqldb',DRIVER='{FreeTDS}',ansi=True,TDS_Version='8.0',SERVER='${here/manageIp}',DATABASE='master',UID='${here/zWinUser}',PWD='${here/zWinPassword}'", 'string'),
+            ('zMsSqlSrvInstances', [], 'lines'),
             ]

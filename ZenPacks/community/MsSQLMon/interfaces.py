@@ -45,5 +45,6 @@ class IMsSqlSrvInstInfo(IDBSrvInstInfo):
     productLevel = schema.Text(title=u"Product Level", readonly=True, group=u"Details")
     licenseType = schema.Text(title=u"License Type", readonly=True, group=u"Details")
     numLicenses = schema.Int(title=u"Licenses", readonly=True, group=u"Details")
+    port = schema.Int(title=u"TCP Port", readonly=True, group=u"Details")
     processID = schema.Int(title=u"Process ID", readonly=True, group=u"Details")
     dbsiproperties = schema.List(title=u"Instance Properties", readonly=True, group=u"Details")

@@ -1,7 +1,7 @@
 ################################################################################
 #
-# This program is part of the MsSQLMon_ODBC Zenpack for Zenoss.
-# Copyright (C) 2009, 2010 Egor Puzanov.
+# This program is part of the MsSQLMon Zenpack for Zenoss.
+# Copyright (C) 2009-2012 Egor Puzanov.
 #
 # This program can be used under the GNU General Public License version 2
 # You can find full information here: http://www.zenoss.com/oss
@@ -12,9 +12,9 @@ __doc__="""MsSqlSrvInst
 
 MsSqlSrvInst is a MS SQL Server Instance
 
-$Id: MsSqlSrvInst.py,v 1.1 2010/09/14 14:57:44 egor Exp $"""
+$Id: MsSqlSrvInst.py,v 1.2 2012/04/20 14:57:44 egor Exp $"""
 
-__version__ = "$Revision: 1.1 $"[11:-2]
+__version__ = "$Revision: 1.2 $"[11:-2]
 
 from Globals import InitializeClass
 
@@ -27,11 +27,12 @@ class MsSqlSrvInst(DBSrvInst):
     Database Server Instance object
     """
 
-    ZENPACKID = 'ZenPacks.community.MsSQLMon_ODBC'
+    ZENPACKID = 'ZenPacks.community.MsSQLMon'
 
     edition = ''
     licenseType = ''
     numLicenses = 0
+    port = 1433
     processID = 0
     productVersion = ''
     productLevel = ''
@@ -41,6 +42,7 @@ class MsSqlSrvInst(DBSrvInst):
         {'id':'edition', 'type':'string', 'mode':'w'},
         {'id':'licenseType', 'type':'string', 'mode':'w'},
         {'id':'numLicenses', 'type':'int', 'mode':'w'},
+        {'id':'port', 'type':'int', 'mode':'w'},
         {'id':'processID', 'type':'int', 'mode':'w'},
         {'id':'productVersion', 'type':'string', 'mode':'w'},
         {'id':'productLevel', 'type':'string', 'mode':'w'},
@@ -53,7 +55,7 @@ class MsSqlSrvInst(DBSrvInst):
             'meta_type'      : 'MsSqlSrvInst',
             'description'    : """Arbitrary device grouping class""",
             'icon'           : 'FileSystem_icon.gif',
-            'product'        : 'MsSQLMon_ODBC',
+            'product'        : 'MsSQLMon',
             'factory'        : 'manage_addDBSrvInst',
             'immediate_view' : 'viewMsSqlSrvInst',
             'actions'        :

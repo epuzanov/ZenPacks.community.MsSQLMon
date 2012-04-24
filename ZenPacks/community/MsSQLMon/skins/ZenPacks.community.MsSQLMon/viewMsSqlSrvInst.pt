@@ -46,6 +46,12 @@
 <tr>
     <td class="tableheader" align=left>Process ID</td>
     <td class="tablevalues" tal:content="here/processID">1</td>
+    <td class="tableheader" align=left>TCP Port</td>
+    <td class="tablevalues" tal:content="here/port"/>
+</tr>
+<tr>
+    <td class="tableheader" align=left>Instance Properties</td>
+    <td class="tablevalues" tal:content="here/dbsiproperties">1</td>
     <td class="tableheader" align=left>State</td>
     <td class="tablevalues" tal:content="here/statusString"/>
 </tr>

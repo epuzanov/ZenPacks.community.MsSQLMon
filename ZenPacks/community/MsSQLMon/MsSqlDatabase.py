@@ -1,7 +1,7 @@
 ################################################################################
 #
-# This program is part of the MsSQLMon_ODBC Zenpack for Zenoss.
-# Copyright (C) 2009, 2010 Egor Puzanov.
+# This program is part of the MsSQLMon Zenpack for Zenoss.
+# Copyright (C) 2009-2012 Egor Puzanov.
 #
 # This program can be used under the GNU General Public License version 2
 # You can find full information here: http://www.zenoss.com/oss
@@ -12,9 +12,9 @@ __doc__="""MsSqlDatabase
 
 MsSqlDatabase is a MS SQL Database
 
-$Id: MsSqlDatabase.py,v 1.1 2010/09/27 23:12:35 egor Exp $"""
+$Id: MsSqlDatabase.py,v 1.2 2012/04/20 13:03:59 egor Exp $"""
 
-__version__ = "$Revision: 1.1 $"[11:-2]
+__version__ = "$Revision: 1.2 $"[11:-2]
 
 from Globals import InitializeClass
 
@@ -43,7 +43,7 @@ class MsSqlDatabase(Database):
     Database object
     """
 
-    ZENPACKID = 'ZenPacks.community.MsSQLMon_ODBC'
+    ZENPACKID = 'ZenPacks.community.MsSQLMon'
 
     dbid = 0
     updateability = ''
@@ -80,7 +80,7 @@ class MsSqlDatabase(Database):
             'meta_type'      : 'MsSqlDatabase',
             'description'    : """Arbitrary device grouping class""",
             'icon'           : 'FileSystem_icon.gif',
-            'product'        : 'MsSQLMon_ODBC',
+            'product'        : 'MsSQLMon',
             'factory'        : 'manage_addDatabase',
             'immediate_view' : 'viewMsSqlDatabase',
             'actions'        :
@@ -115,8 +115,14 @@ class MsSqlDatabase(Database):
         """
         manageIp = self.device().manageIp
         dbsi = self.dbsrvinstance()
-        if dbsi: manageIp = '%s\%s' % (manageIp, dbsi.dbsiname)
-        return manageIp
+        return dbsi and '%s\%s'%(manageIp, dbsi.dbsiname) or manageIp
+
+    def port(self):
+        """
+        Return TCP port of DB Server Instance name if needed
+        """
+        dbsi = self.dbsrvinstance()
+        return dbsi and dbsi.port or 1433
 
     def totalBytes(self):
         """

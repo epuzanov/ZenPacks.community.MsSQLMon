@@ -6,24 +6,27 @@
 MS SQL Database Template
 </property>
 <property type="string" id="targetPythonClass" mode="w" >
-ZenPacks.community.MsSQLMon_ODBC.MsSqlDatabase
+ZenPacks.community.MsSQLMon.MsSqlDatabase
 </property>
 <tomanycont id='datasources'>
-<object id='sysperfinfo' module='ZenPacks.community.ZenODBC.datasources.OdbcDataSource' class='OdbcDataSource'>
+<object id='sysperfinfo' module='ZenPacks.community.SQLDataSource.datasources.SQLDataSource' class='SQLDataSource'>
 <property select_variable="sourcetypes" type="selection" id="sourcetype" mode="w" >
-ODBC
+SQL
 </property>
 <property type="boolean" id="enabled" mode="w" >
 True
 </property>
+<property type="string" id="eventClass" mode="w" >
+/Status/MsSqlDatabase
+</property>
 <property type="int" id="severity" mode="w" >
-3
+4
 </property>
 <property type="int" id="cycletime" mode="w" >
 300
 </property>
 <property type="string" id="cs" mode="w" >
-${here/zMsSqlConnectionString};DATABASE=master;Server=${here/manageIp};UID=${here/zWinUser};PWD=${here/zWinPassword}
+${here/zMsSqlConnectionString}
 </property>
 <property type="string" id="sql" mode="w" >
 SET NOCOUNT ON
@@ -250,18 +253,24 @@ True
 </object>
 </tomanycont>
 <tomanycont id='thresholds'>
-<object id='MsSql90Database status' module='ZenPacks.community.deviceAdvDetail.thresholds.StatusThreshold' class='StatusThreshold'>
-<property label="DataPoints" type="lines" id="dsnames" mode="w" >
+<object id='status' module='Products.ZenModel.MinMaxThreshold' class='MinMaxThreshold'>
+<property type="lines" id="dsnames" mode="w" >
 ['sysperfinfo_Status']
 </property>
-<property label="Enabled" type="boolean" id="enabled" mode="w" >
+<property type="boolean" id="enabled" mode="w" >
 True
+</property>
+<property type="string" id="maxval" mode="w" >
+1
+</property>
+<property type="string" id="eventClass" mode="w" >
+/Status/MsSqlDatabase
+</property>
+<property type="int" id="severity" mode="w" >
+4
 </property>
 <property type="int" id="escalateCount" mode="w" >
 0
-</property>
-<property type="string" id="eventClass" mode="w" >
-/Change/Set/Status
 </property>
 </object>
 </tomanycont>
@@ -817,15 +826,18 @@ AVERAGE
 MS SQL Server Instance Template
 </property>
 <property type="string" id="targetPythonClass" mode="w" >
-ZenPacks.community.MsSQLMon_ODBC.MsSqlSrvInst
+ZenPacks.community.MsSQLMon.MsSqlSrvInst
 </property>
 <tomanycont id='datasources'>
-<object id='LockRequests' module='ZenPacks.community.ZenODBC.datasources.OdbcDataSource' class='OdbcDataSource'>
+<object id='LockRequests' module='ZenPacks.community.SQLDataSource.datasources.SQLDataSource' class='SQLDataSource'>
 <property select_variable="sourcetypes" type="selection" id="sourcetype" mode="w" >
-ODBC
+SQL
 </property>
 <property type="boolean" id="enabled" mode="w" >
 True
+</property>
+<property type="string" id="eventClass" mode="w" >
+/Status/MsSqlSrvInst
 </property>
 <property type="int" id="severity" mode="w" >
 3
@@ -834,7 +846,7 @@ True
 300
 </property>
 <property type="string" id="cs" mode="w" >
-${here/zMsSqlConnectionString};DATABASE=master;Server=${here/manageIp};UID=${here/zWinUser};PWD=${here/zWinPassword}
+${here/zMsSqlConnectionString}
 </property>
 <property type="string" id="sql" mode="w" >
 SELECT [Info Errors] AS InfoErrors,
@@ -1010,12 +1022,15 @@ True
 </object>
 </tomanycont>
 </object>
-<object id='LockTimeouts' module='ZenPacks.community.ZenODBC.datasources.OdbcDataSource' class='OdbcDataSource'>
+<object id='LockTimeouts' module='ZenPacks.community.SQLDataSource.datasources.SQLDataSource' class='SQLDataSource'>
 <property select_variable="sourcetypes" type="selection" id="sourcetype" mode="w" >
-ODBC
+SQL
 </property>
 <property type="boolean" id="enabled" mode="w" >
 True
+</property>
+<property type="string" id="eventClass" mode="w" >
+/Status/MsSqlSrvInst
 </property>
 <property type="int" id="severity" mode="w" >
 3
@@ -1024,7 +1039,7 @@ True
 300
 </property>
 <property type="string" id="cs" mode="w" >
-${here/zMsSqlConnectionString};DATABASE=master;Server=${here/manageIp};UID=${here/zWinUser};PWD=${here/zWinPassword}
+${here/zMsSqlConnectionString}
 </property>
 <property type="string" id="sql" mode="w" >
 SELECT [Info Errors] AS InfoErrors,
@@ -1200,12 +1215,15 @@ True
 </object>
 </tomanycont>
 </object>
-<object id='LockWaitTime' module='ZenPacks.community.ZenODBC.datasources.OdbcDataSource' class='OdbcDataSource'>
+<object id='LockWaitTime' module='ZenPacks.community.SQLDataSource.datasources.SQLDataSource' class='SQLDataSource'>
 <property select_variable="sourcetypes" type="selection" id="sourcetype" mode="w" >
-ODBC
+SQL
 </property>
 <property type="boolean" id="enabled" mode="w" >
 True
+</property>
+<property type="string" id="eventClass" mode="w" >
+/Status/MsSqlSrvInst
 </property>
 <property type="int" id="severity" mode="w" >
 3
@@ -1214,7 +1232,7 @@ True
 300
 </property>
 <property type="string" id="cs" mode="w" >
-${here/zMsSqlConnectionString};DATABASE=master;Server=${here/manageIp};UID=${here/zWinUser};PWD=${here/zWinPassword}
+${here/zMsSqlConnectionString}
 </property>
 <property type="string" id="sql" mode="w" >
 SELECT [Info Errors] AS InfoErrors,
@@ -1390,12 +1408,15 @@ True
 </object>
 </tomanycont>
 </object>
-<object id='NumberOfDeadlocks' module='ZenPacks.community.ZenODBC.datasources.OdbcDataSource' class='OdbcDataSource'>
+<object id='NumberOfDeadlocks' module='ZenPacks.community.SQLDataSource.datasources.SQLDataSource' class='SQLDataSource'>
 <property select_variable="sourcetypes" type="selection" id="sourcetype" mode="w" >
-ODBC
+SQL
 </property>
 <property type="boolean" id="enabled" mode="w" >
 True
+</property>
+<property type="string" id="eventClass" mode="w" >
+/Status/MsSqlSrvInst
 </property>
 <property type="int" id="severity" mode="w" >
 3
@@ -1404,7 +1425,7 @@ True
 300
 </property>
 <property type="string" id="cs" mode="w" >
-${here/zMsSqlConnectionString};DATABASE=master;Server=${here/manageIp};UID=${here/zWinUser};PWD=${here/zWinPassword}
+${here/zMsSqlConnectionString}
 </property>
 <property type="string" id="sql" mode="w" >
 SELECT [Info Errors] AS InfoErrors,
@@ -1580,12 +1601,15 @@ True
 </object>
 </tomanycont>
 </object>
-<object id='SQL Errors' module='ZenPacks.community.ZenODBC.datasources.OdbcDataSource' class='OdbcDataSource'>
+<object id='SQL Errors' module='ZenPacks.community.SQLDataSource.datasources.SQLDataSource' class='SQLDataSource'>
 <property select_variable="sourcetypes" type="selection" id="sourcetype" mode="w" >
-ODBC
+SQL
 </property>
 <property type="boolean" id="enabled" mode="w" >
 True
+</property>
+<property type="string" id="eventClass" mode="w" >
+/Status/MsSqlSrvInst
 </property>
 <property type="int" id="severity" mode="w" >
 3
@@ -1594,7 +1618,7 @@ True
 300
 </property>
 <property type="string" id="cs" mode="w" >
-${here/zMsSqlConnectionString};DATABASE=master;Server=${here/manageIp};UID=${here/zWinUser};PWD=${here/zWinPassword}
+${here/zMsSqlConnectionString}
 </property>
 <property type="string" id="sql" mode="w" >
 SELECT [Info Errors] AS InfoErrors,
@@ -1693,12 +1717,15 @@ True
 </object>
 </tomanycont>
 </object>
-<object id='sysperfinfo' module='ZenPacks.community.ZenODBC.datasources.OdbcDataSource' class='OdbcDataSource'>
+<object id='sysperfinfo' module='ZenPacks.community.SQLDataSource.datasources.SQLDataSource' class='SQLDataSource'>
 <property select_variable="sourcetypes" type="selection" id="sourcetype" mode="w" >
-ODBC
+SQL
 </property>
 <property type="boolean" id="enabled" mode="w" >
 True
+</property>
+<property type="string" id="eventClass" mode="w" >
+/Status/MsSqlSrvInst
 </property>
 <property type="int" id="severity" mode="w" >
 3
@@ -1707,7 +1734,7 @@ True
 300
 </property>
 <property type="string" id="cs" mode="w" >
-${here/zMsSqlConnectionString};DATABASE=master;Server=${here/manageIp};UID=${here/zWinUser};PWD=${here/zWinPassword}
+${here/zMsSqlConnectionString}
 </property>
 <property type="string" id="sql" mode="w" >
 SELECT [Active Temp Tables] AS ActiveTempTables,
@@ -4456,5 +4483,57 @@ AVERAGE
 </tomanycont>
 </object>
 </tomanycont>
+</object>
+<!-- ('', 'zport', 'dmd', 'Events', 'Status', 'MsSqlDatabase') -->
+<object id='/zport/dmd/Events/Status/MsSqlDatabase' module='Products.ZenEvents.EventClass' class='EventClass'>
+<property type="text" id="transform" mode="w" >
+if evt.message.startswith('threshold of '):
+    statusstr = evt.message.split()[-1].strip() 
+    status = statusstr.replace('.','').isdigit() and int(float(statusstr)) or 1
+    evt.severity = {0:0,1:5,2:3,3:3,4:3,5:4,6:4}.get(status, 1)
+else:
+    status = evt.severity and 1 or 0
+for comp in device.os.softwaredatabases():
+    if comp.id != evt.component: continue
+    if comp.status != status:
+        comp.status = status
+        txnCommit()
+    break
+</property>
+<property type="text" id="transform" mode="w" >
+if evt.message.startswith('threshold of '):
+    statusstr = evt.message.split()[-1].strip() 
+    status = statusstr.replace('.','').isdigit() and int(float(statusstr)) or 1
+    evt.severity = {0:0,1:5,2:3,3:3,4:3,5:4,6:4}.get(status, 1)
+else:
+    status = evt.severity and 1 or 0
+for comp in device.os.softwaredatabases():
+    if comp.id != evt.component: continue
+    if comp.status != status:
+        comp.status = status
+        txnCommit()
+    break
+</property>
+</object>
+<!-- ('', 'zport', 'dmd', 'Events', 'Status', 'MsSqlSrvInst') -->
+<object id='/zport/dmd/Events/Status/MsSqlSrvInst' module='Products.ZenEvents.EventClass' class='EventClass'>
+<property type="text" id="transform" mode="w" >
+status = evt.severity and 1 or 0
+for comp in device.os.softwaredbsrvinstances():
+    if comp.id != evt.component: continue
+    if comp.status != status:
+        comp.status = status
+        txnCommit()
+    break
+</property>
+<property type="text" id="transform" mode="w" >
+status = evt.severity and 1 or 0
+for comp in device.os.softwaredbsrvinstances():
+    if comp.id != evt.component: continue
+    if comp.status != status:
+        comp.status = status
+        txnCommit()
+    break
+</property>
 </object>
 </objects>
