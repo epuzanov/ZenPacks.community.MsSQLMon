@@ -12,9 +12,9 @@ __doc__="""MsSqlDatabase
 
 MsSqlDatabase is a MS SQL Database
 
-$Id: MsSqlDatabase.py,v 1.2 2012/04/20 13:03:59 egor Exp $"""
+$Id: MsSqlDatabase.py,v 1.3 2012/04/25 19:55:21 egor Exp $"""
 
-__version__ = "$Revision: 1.2 $"[11:-2]
+__version__ = "$Revision: 1.3 $"[11:-2]
 
 from Globals import InitializeClass
 
@@ -54,13 +54,13 @@ class MsSqlDatabase(Database):
     dbproperties = []
     status = 0
 
-    statusmap ={0: (DOT_GREEN, SEV_CLEAN, 'Online'),
-                1: (DOT_RED, SEV_CRITICAL, 'Offline'),
-                2: (DOT_YELLOW, SEV_WARNING, 'Restoring'),
-                3: (DOT_YELLOW, SEV_WARNING, 'Recovering'),
-                4: (DOT_YELLOW, SEV_WARNING, 'Recovery Pending'),
-                5: (DOT_ORANGE, SEV_ERROR, 'Suspect'),
-                6: (DOT_ORANGE, SEV_ERROR, 'Emergency'),
+    statusmap ={0: (DOT_GREEN, SEV_CLEAN, 'ONLINE'),
+                1: (DOT_YELLOW, SEV_WARNING, 'RESTORING'),
+                2: (DOT_YELLOW, SEV_WARNING, 'RECOVERING'),
+                3: (DOT_YELLOW, SEV_WARNING, 'RECOVERY PENDING'),
+                4: (DOT_ORANGE, SEV_ERROR, 'SUSPECT'),
+                5: (DOT_ORANGE, SEV_ERROR, 'EMERGENCY'),
+                6: (DOT_RED, SEV_CRITICAL, 'OFFLINE'),
                 }
 
     _properties = Database._properties + (

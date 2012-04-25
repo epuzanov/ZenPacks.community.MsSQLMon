@@ -12,9 +12,9 @@ __doc__="""MsSqlDatabaseMap.py
 
 MsSqlDatabaseMap maps the MS SQL Databases table to Database objects
 
-$Id: MsSqlDatabaseMap.py,v 1.8 2012/04/20 19:06:07 egor Exp $"""
+$Id: MsSqlDatabaseMap.py,v 1.9 2012/04/25 20:15:45 egor Exp $"""
 
-__version__ = "$Revision: 1.8 $"[11:-2]
+__version__ = "$Revision: 1.9 $"[11:-2]
 
 from Products.ZenModel.ZenPackPersistence import ZenPackPersistence
 from Products.DataCollector.plugins.DataMaps import MultiArgs
@@ -70,14 +70,31 @@ RTRIM((CASE WHEN SERVERPROPERTY('isClustered') = 1 THEN 'isClustered ' ELSE '' E
 CONVERT(Int, isnull(@value, 1433)) as PortNumber,
 @@version AS Version"""
 
+TYPES = {1: 'SQL Server',
+        60: 'SQL Server 6.0',
+        65: 'SQL Server 6.5',
+        70: 'SQL Server 7.0',
+        80: 'SQL Server 2000',
+        90: 'SQL Server 2005',
+        100: 'SQL Server 2008',
+        }
+
+STATES = ('ONLINE',
+        'RESTORING',
+        'RECOVERING',
+        'RECOVERY PENDING',
+        'SUSPECT',
+        'EMERGENCY',
+        'OFFLINE')
+
 class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
 
     ZENPACKID = 'ZenPacks.community.MsSQLMon'
 
     maptype = "DatabaseMap"
     compname = "os"
-    relname = "softwaredbsrvinstances"
-    modname = "ZenPacks.community.MsSQLMon.MsSqlSrvInst"
+    relname = "softwaredatabases"
+    modname = "ZenPacks.community.MsSQLMon.MsSqlDatabase"
     deviceProperties = SQLPlugin.deviceProperties + ('zWinUser',
                                                     'zWinPassword',
                                                     'zMsSqlConnectionString',
@@ -92,13 +109,16 @@ class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
         instances = getattr(device, 'zMsSqlSrvInstances', '') or ''
         if type(instances) is str:
             instances = [instances]
+        manageIp = device.manageIp
         for inst in instances:
             inst = inst.strip()
             if inst and not inst.isdigit():
-                setattr(device, 'manageIp', '%s\%s'%(device.manageIp, inst))
-                inst = '1433'
-            setattr(device, 'port', inst or '1433')
+                setattr(device, 'manageIp', '%s\%s'%(manageIp, inst))
+                setattr(device, 'port', '1433')
+            else:
+                setattr(device, 'port', inst or '1433')
             cs = self.prepareCS(device, connectionString)
+            setattr(device, 'manageIp', manageIp)
             tasks['si_%s'%inst] = (
                 QUERYINST,
                 None,
@@ -125,23 +145,16 @@ class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
                     'owner':'contact',
                     'dbid':'dbid',
                     'created':'activeTime',
-                    'status':'_status',
+                    'status':'status',
                     'compatibility_level':'type',
                 })
         return tasks
 
     def process(self, device, results, log):
         log.info('processing %s for device %s', self.name(), device.id)
-        types = {1: 'SQL Server',
-                60: 'SQL Server 6.0',
-                65: 'SQL Server 6.5',
-                70: 'SQL Server 7.0',
-                80: 'SQL Server 2000',
-                90: 'SQL Server 2005',
-                100: 'SQL Server 2008',
-                }
-
-        maps = [self.relMap()]
+        dbrm = self.relMap()
+        irm = self.relMap()
+        irm.relname = "softwaredbsrvinstances"
         databases = []
         instances = set([k[3:] for k in results.keys()])
         for instname in instances:
@@ -153,42 +166,44 @@ class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
             except:
                 databases.extend(dbs)
                 continue
+            om.modname = "ZenPacks.community.MsSQLMon.MsSqlSrvInst"
             if not om.dbsiname:
                 om.dbsiname = instname or 'MSSQLSERVER'
             om.dbsiname = om.dbsiname.strip()
             om.id = self.prepId(om.dbsiname)
+            om.processID = int(om.processID or 0)
             om.dbsiproperties = om.dbsiproperties.split()
             pn, arch = om.setProductKey.split(' - ', 1)
             arch = arch.__contains__('(X64)') and '(64-Bit) ' or ''
             pn = '%s %s(%s)' % (pn, arch, om.dbsiname)
             om.setProductKey = MultiArgs(pn, 'Microsoft')
-            maps[-1].append(om)
+            irm.append(om)
             for db in dbs:
                 db['setDBSrvInst'] = om.dbsiname
                 databases.append(db)
-        self.relname = "softwaredatabases"
-        self.modname = "ZenPacks.community.MsSQLMon.MsSqlDatabase"
-        maps.append(self.relMap())
-        if not databases: return maps
         for database in databases:
             try:
                 om = self.objectMap(database)
                 om.dbproperties = []
-                for dbprop in (database.pop('_status', '') or '').split(', '):
+                for dbprop in (database.pop('status', '') or '').split(', '):
                     try:
                         var, val = dbprop.split('=')
-                        if var == 'Status': continue
+                        if var == 'Status':
+                            val = (val in STATES) and STATES.index(val) or 6
                         setattr(om, var.lower(), val)
                     except: om.dbproperties.append(dbprop)
+                if type(om.status) is not int:
+                    om.status = 6
                 if not hasattr(om, 'setDBSrvInst'):
                     om.id = self.prepId(om.dbname)
                 else:
                     om.id = self.prepId('%s_%s'%(om.setDBSrvInst, om.dbname))
+                om.dbid = int(om.dbid or 0)
                 om.activeTime = str(om.activeTime)
-                om.type = types.get(getattr(om, 'type' , 1), types[1])
+                om.type = TYPES.get(int(getattr(om, 'type' , 1)), TYPES[1])
                 om.blockSize = 8192
                 om.totalBlocks=long(round(float(om.totalBlocks.split()[0])*128))
             except AttributeError:
                 continue
-            maps[-1].append(om)
-        return maps
+            dbrm.append(om)
+        return [irm, dbrm]
