@@ -12,9 +12,9 @@ __doc__="""MsSqlDatabaseMap.py
 
 MsSqlDatabaseMap maps the MS SQL Databases table to Database objects
 
-$Id: MsSqlDatabaseMap.py,v 1.9 2012/04/25 20:15:45 egor Exp $"""
+$Id: MsSqlDatabaseMap.py,v 1.10 2012/04/26 23:06:16 egor Exp $"""
 
-__version__ = "$Revision: 1.9 $"[11:-2]
+__version__ = "$Revision: 1.1 $"[11:-2]
 
 from Products.ZenModel.ZenPackPersistence import ZenPackPersistence
 from Products.DataCollector.plugins.DataMaps import MultiArgs
@@ -124,29 +124,29 @@ class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
                 None,
                 cs,
                 {
-                    'InstanceName':'dbsiname',
-                    'Edition':'edition',
-                    'LicenseType':'licenseType',
-                    'NumLicenses':'numLicenses',
-                    'ProcessID':'processID',
-                    'ProductVersion':'productVersion',
-                    'ProductLevel':'productLevel',
-                    'Version':'setProductKey',
+                    'dbsiname':'InstanceName',
+                    'edition':'Edition',
+                    'licenseType':'LicenseType',
+                    'numLicenses':'NumLicenses',
+                    'processID':'ProcessID',
+                    'productVersion':'ProductVersion',
+                    'productLevel':'ProductLevel',
+                    'setProductKey':'Version',
                     'dbsiproperties':'dbsiproperties',
-                    'PortNumber':'port',
+                    'port':'PortNumber',
                 })
             tasks['db_%s'%inst] = (
                 "sp_helpdb",
                 None,
                 cs,
                 {
-                    'name':'dbname',
-                    'db_size':'totalBlocks',
-                    'owner':'contact',
+                    'dbname':'dbname',
+                    'totalBlocks':'db_size',
+                    'contact':'owner',
                     'dbid':'dbid',
-                    'created':'activeTime',
+                    'activeTime':'created',
                     'status':'status',
-                    'compatibility_level':'type',
+                    'type':'compatibility_level',
                 })
         return tasks
 
