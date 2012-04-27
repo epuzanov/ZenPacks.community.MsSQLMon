@@ -12,9 +12,9 @@ __doc__="""MsSqlDatabaseMap.py
 
 MsSqlDatabaseMap maps the MS SQL Databases table to Database objects
 
-$Id: MsSqlDatabaseMap.py,v 1.10 2012/04/26 23:06:16 egor Exp $"""
+$Id: MsSqlDatabaseMap.py,v 1.11 2012/04/27 20:42:31 egor Exp $"""
 
-__version__ = "$Revision: 1.1 $"[11:-2]
+__version__ = "$Revision: 1.11 $"[11:-2]
 
 from Products.ZenModel.ZenPackPersistence import ZenPackPersistence
 from Products.DataCollector.plugins.DataMaps import MultiArgs
@@ -79,13 +79,14 @@ TYPES = {1: 'SQL Server',
         100: 'SQL Server 2008',
         }
 
-STATES = ('ONLINE',
-        'RESTORING',
-        'RECOVERING',
-        'RECOVERY PENDING',
-        'SUSPECT',
-        'EMERGENCY',
-        'OFFLINE')
+STATES = {0:'ONLINE',
+        1:'RESTORING',
+        2:'RECOVERING',
+        3:'RECOVERY PENDING',
+        4:'SUSPECT',
+        5:'EMERGENCY',
+        6:'OFFLINE',
+        }
 
 class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
 
@@ -140,7 +141,7 @@ class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
                 None,
                 cs,
                 {
-                    'dbname':'dbname',
+                    'dbname':'name',
                     'totalBlocks':'db_size',
                     'contact':'owner',
                     'dbid':'dbid',
@@ -189,7 +190,7 @@ class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
                     try:
                         var, val = dbprop.split('=')
                         if var == 'Status':
-                            val = (val in STATES) and STATES.index(val) or 6
+                            val = STATES.get(val, 6)
                         setattr(om, var.lower(), val)
                     except: om.dbproperties.append(dbprop)
                 if type(om.status) is not int:
