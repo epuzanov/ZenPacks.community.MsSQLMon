@@ -1739,7 +1739,7 @@ ${here/zMsSqlConnectionString}
 <property type="string" id="sql" mode="w" >
 SELECT [Active Temp Tables] AS ActiveTempTables,
 [Batch Requests/sec] AS BatchRequests,
-[Buffer cache hit ratio] / [Buffer cache hit ratio base] * 100 AS BufferCacheHitRatio,
+cast([Buffer cache hit ratio] as float) / cast([Buffer cache hit ratio base] as float) * 100 AS BufferCacheHitRatio,
 [Checkpoint pages/sec] AS CheckpointPages,
 [Free pages] * 8192 AS FreeServerMemory,
 [FreeSpace Scans/sec] AS FreeSpaceScans,
