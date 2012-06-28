@@ -12,9 +12,9 @@ __doc__="""MsSqlDatabaseMap.py
 
 MsSqlDatabaseMap maps the MS SQL Databases table to Database objects
 
-$Id: MsSqlDatabaseMap.py,v 1.12 2012/04/30 17:18:37 egor Exp $"""
+$Id: MsSqlDatabaseMap.py,v 1.13 2012/06/28 22:46:07 egor Exp $"""
 
-__version__ = "$Revision: 1.12 $"[11:-2]
+__version__ = "$Revision: 1.13 $"[11:-2]
 
 from Products.ZenModel.ZenPackPersistence import ZenPackPersistence
 from Products.DataCollector.plugins.DataMaps import MultiArgs
@@ -198,10 +198,17 @@ class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
                     om.id = self.prepId('%s_%s'%(om.setDBSrvInst, om.dbname))
                 om.dbid = int(om.dbid or 0)
                 om.activeTime = str(om.activeTime)
-                om.type = TYPES.get(int(getattr(om, 'type' , 1)), TYPES[1])
-                om.blockSize = 8192
-                om.totalBlocks=long(round(float(om.totalBlocks.split()[0])*128))
-            except AttributeError:
+            except Exception:
                 continue
+            om.blockSize = 8192
+            try:
+                om.type = TYPES.get(float(str(getattr(om,'type',1)))) or TYPES[1]
+            except ValueError:
+                om.type = TYPES[1]
+            try:
+                om.totalBlocks = long(round(float(str(getattr(om,
+                                    'totalBlocks', 0) or 0).split()[0]) * 128))
+            except ValueError:
+                om.totalBlocks = 0
             dbrm.append(om)
         return [irm, dbrm]

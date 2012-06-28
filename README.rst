@@ -123,25 +123,25 @@ Monitoring Templates
 Performance graphs
 ------------------
 
-**MsSqlSrvInst**
+- MsSqlSrvInst
 
-- SQL Lock Requests
-- SQL Lock Timeouts
-- SQL Lock Wait Time
-- SQL Deadlocks
-- SQL Errors
-- SQL Connections
-- SQL Server Memory
-- SQL Cache Hit Ratio
-- SQL Memory Pages
-- SQL Page Life Expectancy
-- SQL Scans
-- SQL Statistics
+  - SQL Lock Requests
+  - SQL Lock Timeouts
+  - SQL Lock Wait Time
+  - SQL Deadlocks
+  - SQL Errors
+  - SQL Connections
+  - SQL Server Memory
+  - SQL Cache Hit Ratio
+  - SQL Memory Pages
+  - SQL Page Life Expectancy
+  - SQL Scans
+  - SQL Statistics
 
-**MsSqlDatabase**
+- MsSqlDatabase
 
-- Database Files Size
-- Transactions
-- Log Flusches
-- Throughput
-- Pending Transactions
+  - Database Files Size
+  - Transactions
+  - Log Flusches
+  - Throughput
+  - Pending Transactions
