@@ -12,9 +12,9 @@ __doc__="""MsSqlDatabase
 
 MsSqlDatabase is a MS SQL Database
 
-$Id: MsSqlDatabase.py,v 1.3 2012/04/25 19:55:21 egor Exp $"""
+$Id: MsSqlDatabase.py,v 1.4 2012/10/11 19:11:45 egor Exp $"""
 
-__version__ = "$Revision: 1.3 $"[11:-2]
+__version__ = "$Revision: 1.4 $"[11:-2]
 
 from Globals import InitializeClass
 
@@ -108,14 +108,6 @@ class MsSqlDatabase(Database):
             )
           },
         )
-
-    def manageIp(self):
-        """
-        Return manageIp with DB Server Instance name if needed
-        """
-        manageIp = self.device().manageIp
-        dbsi = self.dbsrvinstance()
-        return dbsi and '%s\%s'%(manageIp, dbsi.dbsiname) or manageIp
 
     def port(self):
         """

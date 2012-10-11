@@ -15,8 +15,8 @@ Zenoss
 ------
 
 You must first have, or install, Zenoss 2.5.2 or later. This ZenPack was tested
-against Zenoss 2.5.2 and Zenoss 3.2. You can download the free Core version of
-Zenoss from http://community.zenoss.org/community/download
+against Zenoss 2.5.2, Zenoss 3.2 and Zenoss 4.2. You can download the free Core
+version of Zenoss from http://community.zenoss.org/community/download
 
 ZenPacks
 --------
@@ -43,7 +43,7 @@ user. Note that **pymssql** module used FreeTDS driver too.
 
       ::
 
-          'pyisqldb',DRIVER='{FreeTDS}',ansi=True,TDS_Version='8.0',SERVER='${here/manageIp}',DATABASE='master',UID='${here/zWinUser}',PWD='${here/zWinPassword}'
+          'pyisqldb',DRIVER='{FreeTDS}',ansi=True,TDS_Version='8.0',SERVER='${here/manageIp}\${here/dbSrvinstName}',DATABASE='master',UID='${here/zWinUser}',PWD='${here/zWinPassword}'
 
 - `pyodbc <http://code.google.com/p/pyodbc/>`_ - DB-API 2.0 compatible interface
   to unixODBC. FreeTDS ODBC driver must be installed and registered with name
@@ -79,7 +79,7 @@ user.
 
     ::
 
-        zenpack --install ZenPacks.community.MsSQLMon-3.2.egg
+        zenpack --install ZenPacks.community.MsSQLMon-3.4.egg
         zenoss restart
 
 Developer Installation (link mode)

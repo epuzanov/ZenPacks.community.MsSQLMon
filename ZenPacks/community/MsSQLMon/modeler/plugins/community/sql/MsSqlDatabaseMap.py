@@ -12,14 +12,15 @@ __doc__="""MsSqlDatabaseMap.py
 
 MsSqlDatabaseMap maps the MS SQL Databases table to Database objects
 
-$Id: MsSqlDatabaseMap.py,v 1.13 2012/06/28 22:46:07 egor Exp $"""
+$Id: MsSqlDatabaseMap.py,v 1.14 2012/10/11 19:12:14 egor Exp $"""
 
-__version__ = "$Revision: 1.13 $"[11:-2]
+__version__ = "$Revision: 1.14 $"[11:-2]
 
 from Products.ZenModel.ZenPackPersistence import ZenPackPersistence
 from Products.DataCollector.plugins.DataMaps import MultiArgs
 from ZenPacks.community.SQLDataSource.SQLPlugin import SQLPlugin
 
+DEFAULTCS = "'pyisqldb',DRIVER='{FreeTDS}',ansi=True,TDS_Version='8.0',SERVER='${here/manageIp}\${here/dbSrvInstName}',PORT=${here/port},DATABASE='master',UID='${here/zWinUser}',PWD='${here/zWinPassword}'"
 QUERYINST = """SET NOCOUNT ON
 DECLARE @InstanceName nvarchar(50)
 DECLARE @value VARCHAR(100)
@@ -105,21 +106,24 @@ class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
 
     def queries(self, device):
         tasks = {}
-        connectionString = getattr(device, 'zMsSqlConnectionString',
-            "'pyisqldb',DRIVER='{FreeTDS}',ansi=True,TDS_Version='8.0',SERVER='${here/manageIp}',DATABASE='master',UID='${here/zWinUser}',PWD='${here/zWinPassword}'")
+        connectionString = getattr(device, 'zMsSqlConnectionString', DEFAULTCS)
         instances = getattr(device, 'zMsSqlSrvInstances', '') or ''
         if type(instances) is str:
             instances = [instances]
-        manageIp = device.manageIp
         for inst in instances:
-            inst = inst.strip()
-            if inst and not inst.isdigit():
-                setattr(device, 'manageIp', '%s\%s'%(manageIp, inst))
-                setattr(device, 'port', '1433')
+            inst = str(inst).strip()
+            if inst.isdigit():
+                setattr(device, 'port', inst)
+                setattr(device, 'dbSrvInstName', '')
             else:
-                setattr(device, 'port', inst or '1433')
-            cs = self.prepareCS(device, connectionString)
-            setattr(device, 'manageIp', manageIp)
+                setattr(device, 'port', '1433')
+                setattr(device, 'dbSrvInstName', inst)
+            if not device.dbSrvInstName:
+                cs = self.prepareCS(device,
+                    connectionString.replace('\${here/dbSrvInstName}', ''))
+            else:
+                cs = self.prepareCS(device, connectionString)
+            print cs
             tasks['si_%s'%inst] = (
                 QUERYINST,
                 None,

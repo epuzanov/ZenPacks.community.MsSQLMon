@@ -13,6 +13,6 @@ class ZenPack(ZenPackBase):
     """ MsSQLMon loader
     """
     packZProperties = [
-            ('zMsSqlConnectionString', "'pyisqldb',DRIVER='{FreeTDS}',ansi=True,TDS_Version='8.0',SERVER='${here/manageIp}',DATABASE='master',UID='${here/zWinUser}',PWD='${here/zWinPassword}'", 'string'),
+            ('zMsSqlConnectionString', "'pyisqldb',DRIVER='{FreeTDS}',ansi=True,TDS_Version='8.0',SERVER='${here/manageIp}\${here/dbSrvInstName}',PORT=${here/port},DATABASE='master',UID='${here/zWinUser}',PWD='${here/zWinPassword}'", 'string'),
             ('zMsSqlSrvInstances', [], 'lines'),
             ]
