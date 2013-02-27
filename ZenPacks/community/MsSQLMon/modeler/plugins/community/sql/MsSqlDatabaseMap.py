@@ -1,7 +1,7 @@
 ################################################################################
 #
 # This program is part of the MsSQLMon Zenpack for Zenoss.
-# Copyright (C) 2009-2012 Egor Puzanov.
+# Copyright (C) 2009-2013 Egor Puzanov.
 #
 # This program can be used under the GNU General Public License version 2
 # You can find full information here: http://www.zenoss.com/oss
@@ -12,9 +12,9 @@ __doc__="""MsSqlDatabaseMap.py
 
 MsSqlDatabaseMap maps the MS SQL Databases table to Database objects
 
-$Id: MsSqlDatabaseMap.py,v 1.14 2012/10/11 19:12:14 egor Exp $"""
+$Id: MsSqlDatabaseMap.py,v 1.15 2013/02/27 20:12:22 egor Exp $"""
 
-__version__ = "$Revision: 1.14 $"[11:-2]
+__version__ = "$Revision: 1.15 $"[11:-2]
 
 from Products.ZenModel.ZenPackPersistence import ZenPackPersistence
 from Products.DataCollector.plugins.DataMaps import MultiArgs
@@ -24,8 +24,20 @@ DEFAULTCS = "'pyisqldb',DRIVER='{FreeTDS}',ansi=True,TDS_Version='8.0',SERVER='$
 QUERYINST = """SET NOCOUNT ON
 DECLARE @InstanceName nvarchar(50)
 DECLARE @value VARCHAR(100)
-DECLARE @RegKey nvarchar(500)
 SET @InstanceName=RTRIM(CONVERT(nVARCHAR,isnull(SERVERPROPERTY('INSTANCENAME'),'MSSQLSERVER')))
+%s
+SELECT
+@InstanceName AS InstanceName,
+RTRIM(CONVERT(Char(128), SERVERPROPERTY('Edition'))) AS Edition,
+RTRIM(CONVERT(Char(128), SERVERPROPERTY('LicenseType'))) AS LicenseType,
+RTRIM(CONVERT(Int, SERVERPROPERTY('NumLicenses'))) AS NumLicenses,
+RTRIM(CONVERT(Int, SERVERPROPERTY('ProcessID'))) AS ProcessID,
+RTRIM(CONVERT(Char(128), SERVERPROPERTY('ProductVersion'))) AS ProductVersion,
+RTRIM(CONVERT(Char(128), SERVERPROPERTY('ProductLevel'))) AS ProductLevel,
+RTRIM((CASE WHEN SERVERPROPERTY('isClustered') = 1 THEN 'isClustered ' ELSE '' END) + (CASE WHEN SERVERPROPERTY('IsFullTextInstalled') = 1 THEN 'IsFullTextInstalled ' ELSE '' END) + (CASE WHEN SERVERPROPERTY('IsIntegratedSecurityOnly') = 1 THEN 'IsIntegratedSecurityOnly ' ELSE '' END) + (CASE WHEN SERVERPROPERTY('IsSingleUser') = 1 THEN 'IsSingleUser ' ELSE '' END)) AS dbsiproperties,
+CONVERT(Int, isnull(@value, 1433)) as PortNumber,
+@@version AS Version"""
+QUERYREG = """DECLARE @RegKey nvarchar(500)
 IF (SELECT Convert(varchar(1),(SERVERPROPERTY('ProductVersion'))))<>8
 BEGIN
 EXECUTE xp_regread
@@ -58,18 +70,7 @@ EXECUTE xp_regread
   @key = @RegKey,
   @value_name = 'TcpDynamicPorts',
   @value = @value OUTPUT
-END
-SELECT
-@InstanceName AS InstanceName,
-RTRIM(CONVERT(Char(128), SERVERPROPERTY('Edition'))) AS Edition,
-RTRIM(CONVERT(Char(128), SERVERPROPERTY('LicenseType'))) AS LicenseType,
-RTRIM(CONVERT(Int, SERVERPROPERTY('NumLicenses'))) AS NumLicenses,
-RTRIM(CONVERT(Int, SERVERPROPERTY('ProcessID'))) AS ProcessID,
-RTRIM(CONVERT(Char(128), SERVERPROPERTY('ProductVersion'))) AS ProductVersion,
-RTRIM(CONVERT(Char(128), SERVERPROPERTY('ProductLevel'))) AS ProductLevel,
-RTRIM((CASE WHEN SERVERPROPERTY('isClustered') = 1 THEN 'isClustered ' ELSE '' END) + (CASE WHEN SERVERPROPERTY('IsFullTextInstalled') = 1 THEN 'IsFullTextInstalled ' ELSE '' END) + (CASE WHEN SERVERPROPERTY('IsIntegratedSecurityOnly') = 1 THEN 'IsIntegratedSecurityOnly ' ELSE '' END) + (CASE WHEN SERVERPROPERTY('IsSingleUser') = 1 THEN 'IsSingleUser ' ELSE '' END)) AS dbsiproperties,
-CONVERT(Int, isnull(@value, 1433)) as PortNumber,
-@@version AS Version"""
+END"""
 
 TYPES = {1: 'SQL Server',
         60: 'SQL Server 6.0',
@@ -115,17 +116,18 @@ class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
             if inst.isdigit():
                 setattr(device, 'port', inst)
                 setattr(device, 'dbSrvInstName', '')
+                query = QUERYINST%"SET @value = '%s'"%inst
             else:
                 setattr(device, 'port', '1433')
                 setattr(device, 'dbSrvInstName', inst)
+                query = QUERYINST%QUERYREG
             if not device.dbSrvInstName:
                 cs = self.prepareCS(device,
                     connectionString.replace('\${here/dbSrvInstName}', ''))
             else:
                 cs = self.prepareCS(device, connectionString)
-            print cs
             tasks['si_%s'%inst] = (
-                QUERYINST,
+                query,
                 None,
                 cs,
                 {

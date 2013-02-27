@@ -105,7 +105,8 @@ Configuration Properties
 ------------------------
 
 - zMsSqlConnectionString - connection string template.
-- zMsSqlSrvInstances - list of MS SQL Server instances names or TCP ports
+- zMsSqlSrvInstances - list of MS SQL Server instances names or TCP ports (use
+  TCP port numbers if your user hasn't sql admin role)
 - zWinUser - username
 - zWinPassword - password
 

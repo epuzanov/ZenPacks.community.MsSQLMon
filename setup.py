@@ -5,7 +5,7 @@
 NAME = "ZenPacks.community.MsSQLMon"
 VERSION = "3.4"
 AUTHOR = "Egor Puzanov"
-LICENSE = ""
+LICENSE = "GPLv2"
 NAMESPACE_PACKAGES = ['ZenPacks', 'ZenPacks.community']
 PACKAGES = ['ZenPacks', 'ZenPacks.community', 'ZenPacks.community.MsSQLMon']
 INSTALL_REQUIRES = ['ZenPacks.community.RDBMS>=2.5', 'ZenPacks.community.SQLDataSource>=2.0']
