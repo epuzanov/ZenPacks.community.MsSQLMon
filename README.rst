@@ -79,7 +79,7 @@ user.
 
     ::
 
-        zenpack --install ZenPacks.community.MsSQLMon-3.4.egg
+        zenpack --install ZenPacks.community.MsSQLMon-3.4.0.egg
         zenoss restart
 
 Developer Installation (link mode)

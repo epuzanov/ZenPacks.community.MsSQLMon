@@ -12,20 +12,21 @@ __doc__="""MsSqlDatabaseMap.py
 
 MsSqlDatabaseMap maps the MS SQL Databases table to Database objects
 
-$Id: MsSqlDatabaseMap.py,v 1.15 2013/02/27 20:12:22 egor Exp $"""
+$Id: MsSqlDatabaseMap.py,v 1.16 2013/02/28 21:20:26 egor Exp $"""
 
-__version__ = "$Revision: 1.15 $"[11:-2]
+__version__ = "$Revision: 1.16 $"[11:-2]
 
 from Products.ZenModel.ZenPackPersistence import ZenPackPersistence
 from Products.DataCollector.plugins.DataMaps import MultiArgs
 from ZenPacks.community.SQLDataSource.SQLPlugin import SQLPlugin
+import re
 
 DEFAULTCS = "'pyisqldb',DRIVER='{FreeTDS}',ansi=True,TDS_Version='8.0',SERVER='${here/manageIp}\${here/dbSrvInstName}',PORT=${here/port},DATABASE='master',UID='${here/zWinUser}',PWD='${here/zWinPassword}'"
 QUERYINST = """SET NOCOUNT ON
 DECLARE @InstanceName nvarchar(50)
 DECLARE @value VARCHAR(100)
 SET @InstanceName=RTRIM(CONVERT(nVARCHAR,isnull(SERVERPROPERTY('INSTANCENAME'),'MSSQLSERVER')))
-%s
+SET @value = '%s'
 SELECT
 @InstanceName AS InstanceName,
 RTRIM(CONVERT(Char(128), SERVERPROPERTY('Edition'))) AS Edition,
@@ -116,16 +117,18 @@ class MsSqlDatabaseMap(ZenPackPersistence, SQLPlugin):
             if inst.isdigit():
                 setattr(device, 'port', inst)
                 setattr(device, 'dbSrvInstName', '')
-                query = QUERYINST%"SET @value = '%s'"%inst
             else:
                 setattr(device, 'port', '1433')
                 setattr(device, 'dbSrvInstName', inst)
-                query = QUERYINST%QUERYREG
             if not device.dbSrvInstName:
                 cs = self.prepareCS(device,
                     connectionString.replace('\${here/dbSrvInstName}', ''))
+                m = re.search("PORT\s?=\s?'?\"?(\d*)", cs, flags=re.I)
+                if not m: m = re.search(":(\d*)", cs)
+                query = QUERYINST%(m and m.group(1) or '1433')
             else:
                 cs = self.prepareCS(device, connectionString)
+                query = QUERYINST.replace("SET @value = '%s'", QUERYREG)
             tasks['si_%s'%inst] = (
                 query,
                 None,
